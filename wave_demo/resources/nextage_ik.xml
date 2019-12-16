@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<IKSolverDemoConfig>
+
+  <IKSolver Name="MySolver">
+    <MaxIterations>1000</MaxIterations>
+  </IKSolver>
+
+  <UnconstrainedEndPoseProblem Name="MyProblem">
+
+    <PlanningScene>
+      <Scene>
+        <JointGroup>botharms</JointGroup>
+        <URDF>{nextagea_description}/urdf/NextageAOpen.urdf</URDF>
+        <SRDF>{nextagea_moveit_config}/config/NextageAOpen.srdf</SRDF>
+        <SetRobotDescriptionRosParams>1</SetRobotDescriptionRosParams>
+        <Links>
+            <Link Name="Target1" Parent="" Transform="0.37 -0.23 0.021 0 0 0"/> 
+            <Link Name="Target2" Parent="" Transform="0.35 -0.23 0.7 0 -3.0 0"/> 
+            <Link Name="Target3" Parent="" Transform="0.35 -0.23 0.7 0 -3.0 0.5"/> 
+            <!-- INIT POSE Transform="0.37 -0.23 0.021 0 0 0" -->
+            <!-- WAVE POSE 1 Transform="0.25 -0.23 0.7 3.1415 0 1.5708" -->
+            <!-- WAVE POSE 2 Transform="0.25 -0.23 0.7 3.1415 0 -1.5708" -->
+        </Links>
+      </Scene>
+    </PlanningScene>
+    
+    <Maps>
+      <EffFrame Name="Position1">
+        <EndEffector>
+            <Frame Link="RARM_JOINT5_Link" Base="Target1"/>
+        </EndEffector>
+      </EffFrame>
+      <EffFrame Name="Position2">
+        <EndEffector>
+            <Frame Link="RARM_JOINT5_Link" Base="Target2"/>
+        </EndEffector>
+      </EffFrame>
+      <EffFrame Name="Position3">
+        <EndEffector>
+            <Frame Link="RARM_JOINT5_Link" Base="Target3"/>
+        </EndEffector>
+      </EffFrame>
+    </Maps>
+
+    <Cost>
+      <Task Task="Position1" Rho="1e3"/>
+      <Task Task="Position2" Rho="0"/>
+      <Task Task="Position3" Rho="0"/>
+    </Cost>
+
+    <StartState>0 0 0 0 0 0 0 0 0 0 0 0</StartState>
+    <W>60 50 40 30 20 1 60 50 40 30 20 1</W>
+  </UnconstrainedEndPoseProblem>
+
+</IKSolverDemoConfig>

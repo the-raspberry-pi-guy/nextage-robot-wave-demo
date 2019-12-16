@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<PlannerDemoConfig>
+
+  <RRTConnectSolver Name="MySolver" />
+
+  <SamplingProblem Name="MyProblem">
+
+    <PlanningScene>
+      <Scene>
+        <JointGroup>botharms</JointGroup>
+        <URDF>{nextagea_description}/urdf/NextageAOpen.urdf</URDF>
+        <SRDF>{nextagea_moveit_config}/config/NextageAOpen.srdf</SRDF>
+      </Scene>
+    </PlanningScene>
+
+    <Maps>
+      <CollisionCheck Name="Collision" SelfCollision="0" />
+    </Maps>
+
+    <Equality>
+      <Task Task="Collision"/>
+    </Equality>
+
+    <StartState>0 0 0 0 0 0 0 0 0 0 0 0</StartState>
+    <Goal>0 0 0 0 0 0 0 0 0 0 0 0</Goal>
+  </SamplingProblem>
+
+</PlannerDemoConfig>
