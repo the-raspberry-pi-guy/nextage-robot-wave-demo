@@ -4,6 +4,8 @@ import pyexotica as exo
 from pyexotica.publish_trajectory import *
 from time import sleep
 import numpy as np
+import rospy
+from geometry_msgs.msg import Point
 
 exo.Setup.init_ros()
 ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')

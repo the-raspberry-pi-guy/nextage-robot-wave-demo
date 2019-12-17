@@ -27,19 +27,9 @@ class image_converter:
             gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
 
-            if isinstance(faces, numpy.ndarray):
-                target = faces[0]
-                x = target[0]
-                y = target[1]
-                z = 0
-            else:
-                x = -1
-                y = -1
-                z = -1
-
-            self.pub.publish(x,y,z)
-
             for (x, y, w, h) in faces:
+                msg = Point(x, y, 0)
+                self.pub.publish(msg)
                 cv2.rectangle(cv_image, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
         except CvBridgeError as e:
