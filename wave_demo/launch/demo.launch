@@ -2,7 +2,7 @@
 
   <include file="$(find realsense2_camera)/launch/rs_camera.launch"/>
   <node name="detect" pkg="wave_demo" type="detect" output="screen">
-    <!-->><remap to="input" from="/camera/color/image_raw"/> </!-->
+    <remap to="/camera/color/image_raw" from="~input" />
     <param name="HaarFile" value="$(find wave_demo)/resources/haarcascade_frontalface_default.xml" />
   </node>
   <node name="wave" pkg="wave_demo" type="wave" />

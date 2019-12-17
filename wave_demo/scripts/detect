@@ -17,7 +17,7 @@ class image_converter:
         haar_file = rospy.get_param('~HaarFile', '')
         self.face_cascade = cv2.CascadeClassifier(haar_file)
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callback)
+        self.image_sub = rospy.Subscriber(rospy.resolve_name("~input"),Image,self.callback)
         self.pub = rospy.Publisher(rospy.resolve_name("~output"), Point)
 
     def callback(self,data):
