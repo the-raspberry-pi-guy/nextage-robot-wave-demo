@@ -7,16 +7,18 @@ import rospy
 import rospkg
 import cv2
 from std_msgs.msg import String
+from geometry_msgs.msg import Point
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
 class image_converter:
 
     def __init__(self):
-        rospack = rospkg.RosPack()
-        self.face_cascade = cv2.CascadeClassifier(rospack.get_path('face_detector')+'/demo/haarcascade_frontalface_default.xml')
+        haar_file = rospy.get_param('~HaarFile', '')
+        self.face_cascade = cv2.CascadeClassifier(haar_file)
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callback)
+        self.pub = rospy.Publisher(rospy.resolve_name("~output"), Point)
 
     def callback(self,data):
         try:
@@ -36,8 +38,8 @@ class image_converter:
         cv2.waitKey(3)
 
 def main(args):
-    ic = image_converter()
     rospy.init_node('image_converter', anonymous=True)
+    ic = image_converter()    
     try:
         rospy.spin()
     except KeyboardInterrupt:
