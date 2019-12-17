@@ -12,7 +12,7 @@ from geometry_msgs.msg import Point
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-class image_converter:
+class ImageConverter:
 
     def __init__(self):
         haar_file = rospy.get_param('~HaarFile', '')
@@ -40,7 +40,7 @@ class image_converter:
 
 def main(args):
     rospy.init_node('image_converter', anonymous=True)
-    ic = image_converter()    
+    ic = ImageConverter()    
     try:
         rospy.spin()
     except KeyboardInterrupt:

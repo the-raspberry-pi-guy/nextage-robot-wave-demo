@@ -3,58 +3,81 @@
 import pyexotica as exo
 from pyexotica.publish_trajectory import *
 from time import sleep
+import sys
 import numpy as np
 import rospy
 from geometry_msgs.msg import Point
+from std_srvs.srv import Trigger, TriggerResponse
 
-exo.Setup.init_ros()
-ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
-ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
+class NextageWave:
 
-ik.get_problem().set_rho('Position1', 1e3)
-ik.get_problem().set_rho('Position2', 0)
-ik.get_problem().set_rho('Position3', 0)
-q1 = ik.solve()[0]
-publish_pose(q1, ik.get_problem())
-# sleep(1)
+    def __init__(self):
+        self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
+        self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
+        self.ik_solve()
+        self.solution = self.solve_ompl()
+        self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
+        self.boolTrigger = False
+
+    def spin(self):
+        while not rospy.is_shutdown():
+            if self.boolTrigger == True:
+                publish_trajectory(self.solution, 10.0, self.ompl.get_problem(), True)
+                self.boolTrigger = False
+            sleep(0.1)
 
 
-ik.get_problem().set_rho('Position1', 0)
-ik.get_problem().set_rho('Position2', 1e3)
-ik.get_problem().set_rho('Position3', 0)
-q2 = ik.solve()[0]
-publish_pose(q2, ik.get_problem())
-# sleep(1)
+    def ik_solve(self):
+        self.ik.get_problem().set_rho('Position1', 1e3)
+        self.ik.get_problem().set_rho('Position2', 0)
+        self.ik.get_problem().set_rho('Position3', 0)
+        self.q1 = self.ik.solve()[0]
+        publish_pose(self.q1, self.ik.get_problem())
 
-ik.get_problem().set_rho('Position1', 0)
-ik.get_problem().set_rho('Position2', 0)
-ik.get_problem().set_rho('Position3', 1e3)
-q3 = ik.solve()[0]
-publish_pose(q3, ik.get_problem())
-# sleep(1)
+        self.ik.get_problem().set_rho('Position1', 0)
+        self.ik.get_problem().set_rho('Position2', 1e3)
+        self.ik.get_problem().set_rho('Position3', 0)
+        self.q2 = self.ik.solve()[0]
+        publish_pose(self.q2, self.ik.get_problem())
 
-q0 = q1*0.
+        self.ik.get_problem().set_rho('Position1', 0)
+        self.ik.get_problem().set_rho('Position2', 0)
+        self.ik.get_problem().set_rho('Position3', 1e3)
+        self.q3 = self.ik.solve()[0]
+        publish_pose(self.q3, self.ik.get_problem())
 
-solution = []
-ompl.get_problem().start_state = q1
-ompl.get_problem().goal_state = q2
-print('Solving 1')
-solution += ompl.solve().tolist()
-ompl.get_problem().start_state = q2
-ompl.get_problem().goal_state = q3
-print('Solving 1')
-solution += ompl.solve().tolist()
-ompl.get_problem().start_state = q3
-ompl.get_problem().goal_state = q2
-print('Solving 1')
-solution += ompl.solve().tolist()
-ompl.get_problem().start_state = q2
-ompl.get_problem().goal_state = q1
-print('Solving 1')
-solution += ompl.solve().tolist()
+        
+    def solve_ompl(self):
+        solution = []
+        self.ompl.get_problem().start_state = self.q1
+        self.ompl.get_problem().goal_state = self.q2
+        print('Solving 1')
+        solution += self.ompl.solve().tolist()
+        self.ompl.get_problem().start_state = self.q2
+        self.ompl.get_problem().goal_state = self.q3
+        print('Solving 1')
+        solution += self.ompl.solve().tolist()
+        self.ompl.get_problem().start_state = self.q3
+        self.ompl.get_problem().goal_state = self.q2
+        print('Solving 1')
+        solution += self.ompl.solve().tolist()
+        self.ompl.get_problem().start_state = self.q2
+        self.ompl.get_problem().goal_state = self.q1
+        print('Solving 1')
+        solution += self.ompl.solve().tolist()
+        solution = np.array(solution)
+        return solution
 
-solution = np.array(solution)
-publish_trajectory(solution, 10.0, ompl.get_problem())
-#print(q)
-#publish_pose(q, ik.get_problem())
-sleep(5)
+    def trigger_response(self, request):
+        self.boolTrigger = True
+        return TriggerResponse(success=True, message="Wave initiated")
+
+def main(args):
+    rospy.init_node("wave_service")
+    exo.Setup.init_ros()
+    wave = NextageWave()
+    wave.spin()
+
+
+if __name__ == '__main__':
+    main(sys.argv)
