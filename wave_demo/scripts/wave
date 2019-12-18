@@ -22,7 +22,7 @@ class NextageWave:
     def spin(self):
         while not rospy.is_shutdown():
             if self.boolTrigger == True:
-                publish_trajectory(self.solution, 10.0, self.ompl.get_problem(), True)
+                publish_trajectory(self.solution, 5.0, self.ompl.get_problem(), True)
                 self.boolTrigger = False
             sleep(0.1)
 

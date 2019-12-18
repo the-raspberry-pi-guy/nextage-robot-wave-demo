@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import pyexotica as exo
+from time import sleep
+import sys
+import rospy
+from geometry_msgs.msg import Point
+from std_srvs.srv import Trigger, TriggerResponse, TriggerRequest
+
+class WaveDemo:
+
+    def __init__(self):
+        rospy.wait_for_service('wave_service')
+        self.waver = rospy.ServiceProxy('wave_service', Trigger)
+        self.wave_trigger = TriggerRequest()
+        rospy.Subscriber(rospy.resolve_name("~input"), Point, self.callback)
+
+    def callback(self,data):
+        rospy.loginfo(rospy.get_caller_id() + "I see a face!")
+        result = self.waver(self.wave_trigger)
+
+
+def main(args):
+    rospy.init_node("wave_demo_listener", anonymous=True)
+    wd = WaveDemo()
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        print("Shutting down")
+
+if __name__ == '__main__':
+    main(sys.argv)
