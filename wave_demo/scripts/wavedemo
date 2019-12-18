@@ -17,7 +17,6 @@ class WaveDemo:
         rospy.wait_for_service('wave_service')
         self.waver = rospy.ServiceProxy('wave_service', Trigger)
         self.wave_service_trigger = TriggerRequest()
-        self.can_wave = False
         rospy.Subscriber(rospy.resolve_name("~input"), Point, self.callback)
 
     def spin(self):
