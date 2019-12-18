@@ -11,21 +11,51 @@ from std_srvs.srv import Trigger, TriggerResponse, TriggerRequest
 class WaveDemo:
 
     def __init__(self):
+        self.state = "neutral"
+        self.person_detected = False
+        self.rate = rospy.Rate(10)
         rospy.wait_for_service('wave_service')
         self.waver = rospy.ServiceProxy('wave_service', Trigger)
-        self.wave_trigger = TriggerRequest()
+        self.wave_service_trigger = TriggerRequest()
+        self.can_wave = False
         rospy.Subscriber(rospy.resolve_name("~input"), Point, self.callback)
 
+    def spin(self):
+        while not rospy.is_shutdown():
+            # 3 state FSM representing different robot operations
+            if self.state == "neutral":
+                if self.person_detected:
+                    self.state = "watching"
+                    self.watching_timer = rospy.Time.now()
+
+            elif self.state == "watching":
+                if not self.person_detected:
+                    self.state = "neutral"
+                elif (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=10):
+                    self.wave()
+                    self.state = "cooldown"
+                else:
+                    pass
+            
+            elif self.state == "cooldown":
+                if not self.person_detected:
+                    self.state = "neutral"
+
+            self.person_detected = False
+            self.rate.sleep()
+
     def callback(self,data):
-        rospy.loginfo(rospy.get_caller_id() + "I see a face!")
-        result = self.waver(self.wave_trigger)
+        self.person_detected = True
+
+    def wave(self):
+        result = self.waver(self.wave_service_trigger)
 
 
 def main(args):
     rospy.init_node("wave_demo_listener", anonymous=True)
     wd = WaveDemo()
     try:
-        rospy.spin()
+        wd.spin()
     except KeyboardInterrupt:
         print("Shutting down")
 

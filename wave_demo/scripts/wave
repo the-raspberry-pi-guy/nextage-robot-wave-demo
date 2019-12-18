@@ -12,6 +12,7 @@ from std_srvs.srv import Trigger, TriggerResponse
 class NextageWave:
 
     def __init__(self):
+        self.trajectory_time = 5
         self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
         self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
         self.ik_solve()
@@ -22,7 +23,7 @@ class NextageWave:
     def spin(self):
         while not rospy.is_shutdown():
             if self.boolTrigger == True:
-                publish_trajectory(self.solution, 5.0, self.ompl.get_problem(), True)
+                publish_trajectory(self.solution, self.trajectory_time, self.ompl.get_problem(), True)
                 self.boolTrigger = False
             sleep(0.1)
 
@@ -32,19 +33,16 @@ class NextageWave:
         self.ik.get_problem().set_rho('Position2', 0)
         self.ik.get_problem().set_rho('Position3', 0)
         self.q1 = self.ik.solve()[0]
-        publish_pose(self.q1, self.ik.get_problem())
 
         self.ik.get_problem().set_rho('Position1', 0)
         self.ik.get_problem().set_rho('Position2', 1e3)
         self.ik.get_problem().set_rho('Position3', 0)
         self.q2 = self.ik.solve()[0]
-        publish_pose(self.q2, self.ik.get_problem())
 
         self.ik.get_problem().set_rho('Position1', 0)
         self.ik.get_problem().set_rho('Position2', 0)
         self.ik.get_problem().set_rho('Position3', 1e3)
         self.q3 = self.ik.solve()[0]
-        publish_pose(self.q3, self.ik.get_problem())
 
         
     def solve_ompl(self):
@@ -70,6 +68,7 @@ class NextageWave:
 
     def trigger_response(self, request):
         self.boolTrigger = True
+        #sleep(self.trajectory_time)
         return TriggerResponse(success=True, message="Wave initiated")
 
 def main(args):
