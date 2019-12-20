@@ -6,7 +6,7 @@
     <param name="HaarFile" value="$(find wave_demo)/resources/haarcascade_frontalface_default.xml" />
   </node>
 
-  <node name="wave" pkg="wave_demo" type="wave" />
+  <node name="wave" pkg="wave_demo" type="wave" output="screen"/>
 
   <node name="wavedemo" pkg="wave_demo" type="wavedemo" output="screen">
     <remap to="/detect/output" from="~input" />

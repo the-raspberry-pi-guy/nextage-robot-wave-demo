@@ -7,25 +7,51 @@ import sys
 import numpy as np
 import rospy
 from geometry_msgs.msg import Point
+from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
 from std_srvs.srv import Trigger, TriggerResponse
 
 class NextageWave:
 
     def __init__(self):
-        self.trajectory_time = 5
+        self.trajectory_time = 20.0
         self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
         self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
         self.ik_solve()
-        self.solution = self.solve_ompl()
+        self.pos = self.solve_ompl()
+        self.dt = self.trajectory_time / self.pos.shape[0]
+        self.vel = (np.diff(self.pos, axis=0, prepend=[self.pos[0]]) + np.diff(self.pos, axis=0, append=[self.pos[-1]])) / (2.0 * self.dt)
+        
+        self.trajectory_message = JointTrajectory()
+        self.trajectory_message.joint_names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+        t0 = 1.0
+        for i in range(self.pos.shape[0]):
+            point = JointTrajectoryPoint()
+            point.velocities = self.vel[i].tolist()
+            point.positions = self.pos[i].tolist()
+            point.time_from_start = rospy.Duration(t0 + float(i) * self.dt)
+            self.trajectory_message.points.append(point)
+
+        self.home_message = JointTrajectory()
+        self.home_message.joint_names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+        point = JointTrajectoryPoint()
+        point.positions = self.pos[0].tolist()
+        point.time_from_start = rospy.Duration(5.0)
+        self.home_message.points.append(point)
+
         self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
+#        self.service = rospy.Service("home_service", Trigger, self.trigger_home)
+        self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory)
         self.boolTrigger = False
 
     def spin(self):
         while not rospy.is_shutdown():
             if self.boolTrigger == True:
-                publish_trajectory(self.solution, self.trajectory_time, self.ompl.get_problem(), True)
+                print("\n\n SHOULD WAVE")
+                self.trajectory_message.header.stamp = rospy.Time.now()
+                self.pub.publish(self.trajectory_message)
+                publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
                 self.boolTrigger = False
-            sleep(0.1)
+            #sleep(0.1)
 
 
     def ik_solve(self):
@@ -65,6 +91,11 @@ class NextageWave:
         solution += self.ompl.solve().tolist()
         solution = np.array(solution)
         return solution
+
+#    def trigger_home(self, request):
+#        self.home_message.header.stamp = rospy.Time.now()
+#        sleep(5.0)
+#        return TriggerResponse(success=True, message="Done")
 
     def trigger_response(self, request):
         self.boolTrigger = True
