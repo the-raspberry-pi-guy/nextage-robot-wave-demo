@@ -39,14 +39,14 @@ class NextageWave:
         self.home_message.points.append(point)
 
         self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
-#        self.service = rospy.Service("home_service", Trigger, self.trigger_home)
+        self.service = rospy.Service("home_service", Trigger, self.trigger_home)
         self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory)
         self.boolTrigger = False
 
     def spin(self):
         while not rospy.is_shutdown():
             if self.boolTrigger == True:
-                print("\n\n SHOULD WAVE")
+                print("SHOULD WAVE")
                 self.trajectory_message.header.stamp = rospy.Time.now()
                 self.pub.publish(self.trajectory_message)
                 publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
@@ -92,14 +92,16 @@ class NextageWave:
         solution = np.array(solution)
         return solution
 
-#    def trigger_home(self, request):
-#        self.home_message.header.stamp = rospy.Time.now()
-#        sleep(5.0)
-#        return TriggerResponse(success=True, message="Done")
+    def trigger_home(self, request):
+        self.home_message.header.stamp = rospy.Time.now()
+        self.pub.publish(self.home_message)
+
+        sleep(5.0)
+        return TriggerResponse(success=True, message="Done")
 
     def trigger_response(self, request):
         self.boolTrigger = True
-        #sleep(self.trajectory_time)
+        sleep(self.trajectory_time)
         return TriggerResponse(success=True, message="Wave initiated")
 
 def main(args):

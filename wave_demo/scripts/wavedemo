@@ -16,8 +16,10 @@ class WaveDemo:
         self.rate = rospy.Rate(10)
         rospy.wait_for_service('wave_service')
         self.waver = rospy.ServiceProxy('wave_service', Trigger)
+        self.homer = rospy.ServiceProxy('home_service', Trigger)
         self.wave_service_trigger = TriggerRequest()
         rospy.Subscriber(rospy.resolve_name("~input"), Point, self.callback)
+        result = self.homer(self.wave_service_trigger)
 
     def spin(self):
         while not rospy.is_shutdown():
