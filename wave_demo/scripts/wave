@@ -9,6 +9,8 @@ import rospy
 from geometry_msgs.msg import Point
 from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
 from std_srvs.srv import Trigger, TriggerResponse
+import matplotlib.pyplot as plt
+import signal
 
 class NextageWave:
 
@@ -17,13 +19,25 @@ class NextageWave:
         self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
         self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
         self.ik_solve()
+        publish_pose(self.q1, self.ik.get_problem())
         self.pos = self.solve_ompl()
         self.dt = self.trajectory_time / self.pos.shape[0]
         self.vel = (np.diff(self.pos, axis=0, prepend=[self.pos[0]]) + np.diff(self.pos, axis=0, append=[self.pos[-1]])) / (2.0 * self.dt)
+        self.limits = self.ompl.get_problem().get_bounds()
+        self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+
+        for i in range(self.pos.shape[1]):
+            plt.figure()
+            plt.plot(self.pos[:,i], '.-')
+            plt.plot([0,self.pos.shape[0]], [self.limits[i], self.limits[i]], 'r')
+            plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
+            plt.title(self.names[i])
+            plt.show()
         
         self.trajectory_message = JointTrajectory()
-        self.trajectory_message.joint_names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+        self.trajectory_message.joint_names = self.names
         t0 = 1.0
+
         for i in range(self.pos.shape[0]):
             point = JointTrajectoryPoint()
             point.velocities = self.vel[i].tolist()
@@ -40,35 +54,27 @@ class NextageWave:
 
         self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
         self.service = rospy.Service("home_service", Trigger, self.trigger_home)
-        self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory)
+        self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory, queue_size=10)
         self.boolTrigger = False
 
     def spin(self):
         while not rospy.is_shutdown():
-            if self.boolTrigger == True:
-                print("SHOULD WAVE")
-                self.trajectory_message.header.stamp = rospy.Time.now()
-                self.pub.publish(self.trajectory_message)
-                publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
-                self.boolTrigger = False
-            #sleep(0.1)
-
+            try:
+                if self.boolTrigger == True:
+                    print("SHOULD WAVE")
+                    self.trajectory_message.header.stamp = rospy.Time.now()
+                    self.pub.publish(self.trajectory_message)
+                    publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
+                    self.boolTrigger = False
+                sleep(0.1)
+            except KeyboardInterrupt:
+                break
 
     def ik_solve(self):
-        self.ik.get_problem().set_rho('Position1', 1e3)
-        self.ik.get_problem().set_rho('Position2', 0)
-        self.ik.get_problem().set_rho('Position3', 0)
-        self.q1 = self.ik.solve()[0]
-
-        self.ik.get_problem().set_rho('Position1', 0)
-        self.ik.get_problem().set_rho('Position2', 1e3)
-        self.ik.get_problem().set_rho('Position3', 0)
+        self.q1 = np.zeros(12)
         self.q2 = self.ik.solve()[0]
-
-        self.ik.get_problem().set_rho('Position1', 0)
-        self.ik.get_problem().set_rho('Position2', 0)
-        self.ik.get_problem().set_rho('Position3', 1e3)
-        self.q3 = self.ik.solve()[0]
+        self.q3 = self.q2.copy()
+        self.q3[-1] -= 0.5
 
         
     def solve_ompl(self):
@@ -79,15 +85,15 @@ class NextageWave:
         solution += self.ompl.solve().tolist()
         self.ompl.get_problem().start_state = self.q2
         self.ompl.get_problem().goal_state = self.q3
-        print('Solving 1')
+        print('Solving 2')
         solution += self.ompl.solve().tolist()
         self.ompl.get_problem().start_state = self.q3
         self.ompl.get_problem().goal_state = self.q2
-        print('Solving 1')
+        print('Solving 3')
         solution += self.ompl.solve().tolist()
         self.ompl.get_problem().start_state = self.q2
         self.ompl.get_problem().goal_state = self.q1
-        print('Solving 1')
+        print('Solving 4')
         solution += self.ompl.solve().tolist()
         solution = np.array(solution)
         return solution
@@ -104,9 +110,13 @@ class NextageWave:
         sleep(self.trajectory_time)
         return TriggerResponse(success=True, message="Wave initiated")
 
+def sig_int_handler(signal, frame):
+    raise KeyboardInterrupt
+
 def main(args):
     rospy.init_node("wave_service")
     exo.Setup.init_ros()
+    signal.signal(signal.SIGINT, sig_int_handler)
     wave = NextageWave()
     wave.spin()
 
