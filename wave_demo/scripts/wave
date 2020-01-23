@@ -26,13 +26,13 @@ class NextageWave:
         self.limits = self.ompl.get_problem().get_bounds()
         self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
 
-        for i in range(self.pos.shape[1]):
-            plt.figure()
-            plt.plot(self.pos[:,i], '.-')
-            plt.plot([0,self.pos.shape[0]], [self.limits[i], self.limits[i]], 'r')
-            plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
-            plt.title(self.names[i])
-            plt.show()
+        # for i in range(self.pos.shape[1]):
+        #     plt.figure()
+        #     plt.plot(self.pos[:,i], '.-')
+        #     plt.plot([0,self.pos.shape[0]], [self.limits[i], self.limits[i]], 'r')
+        #     plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
+        #     plt.title(self.names[i])
+        #     plt.show()
         
         self.trajectory_message = JointTrajectory()
         self.trajectory_message.joint_names = self.names
