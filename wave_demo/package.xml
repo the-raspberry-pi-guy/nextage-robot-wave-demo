@@ -20,13 +20,18 @@
   <build_depend>exotica_examples</build_depend>
   <build_depend>nextagea_description</build_depend>
   <build_depend>nextagea_moveit_config</build_depend>
+  <build_depend>cv_bridge</build_depend>
   <build_export_depend>exotica_python</build_export_depend>
   <build_export_depend>exotica_examples</build_export_depend>
   <build_export_depend>nextagea_description</build_export_depend>
   <build_export_depend>nextagea_moveit_config</build_export_depend>
+  <build_export_depend>cv_bridge</build_export_depend>
   <exec_depend>exotica_python</exec_depend>
   <exec_depend>exotica_examples</exec_depend>
   <exec_depend>nextagea_description</exec_depend>
   <exec_depend>nextagea_moveit_config</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+
+
 
 </package>

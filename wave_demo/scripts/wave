@@ -22,7 +22,7 @@ class NextageWave:
         publish_pose(self.q1, self.ik.get_problem())
         self.pos = self.solve_ompl()
         self.dt = self.trajectory_time / self.pos.shape[0]
-        self.vel = (np.diff(self.pos, axis=0, prepend=[self.pos[0]]) + np.diff(self.pos, axis=0, append=[self.pos[-1]])) / (2.0 * self.dt)
+        self.vel = (np.diff(np.vstack([self.pos[0], self.pos]), axis=0) + np.diff(np.vstack([self.pos, self.pos[-1]]), axis=0)) / (2.0 * self.dt)
         self.limits = self.ompl.get_problem().get_bounds()
         self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
 
@@ -33,9 +33,8 @@ class NextageWave:
         #     plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
         #     plt.title(self.names[i])
         #     plt.show()
-        
         self.trajectory_message = JointTrajectory()
-        self.trajectory_message.joint_names = self.names
+        self.trajectory_message.joint_names = [x.encode('ascii') for x in self.ompl.get_problem().get_scene().get_joint_names()]
         t0 = 1.0
 
         for i in range(self.pos.shape[0]):
@@ -46,7 +45,7 @@ class NextageWave:
             self.trajectory_message.points.append(point)
 
         self.home_message = JointTrajectory()
-        self.home_message.joint_names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+        self.home_message.joint_names = self.trajectory_message.joint_names
         point = JointTrajectoryPoint()
         point.positions = self.pos[0].tolist()
         point.time_from_start = rospy.Duration(5.0)
@@ -64,7 +63,7 @@ class NextageWave:
                     print("SHOULD WAVE")
                     self.trajectory_message.header.stamp = rospy.Time.now()
                     self.pub.publish(self.trajectory_message)
-                    publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
+                    #publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
                     self.boolTrigger = False
                 sleep(0.1)
             except KeyboardInterrupt:

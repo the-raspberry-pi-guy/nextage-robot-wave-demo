@@ -24,11 +24,14 @@ class ImageConverter:
     def callback(self,data):
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            rows, cols, _channels = map(int, cv_image.shape)
+            cv_image = cv2.pyrDown(cv_image, dstsize=(cols // 2, rows // 2))
+            cv_image = cv2.pyrDown(cv_image, dstsize=(cols // 4, rows // 4))
             gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
             faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
-
+            
             for (x, y, w, h) in faces:
-                msg = Point(x, y, 0)
+                msg = Point(x*4, y*4, 0)
                 self.pub.publish(msg)
                 cv2.rectangle(cv_image, (x, y), (x+w, y+h), (255, 0, 0), 2)
 

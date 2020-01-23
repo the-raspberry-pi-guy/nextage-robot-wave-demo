@@ -13,7 +13,7 @@ class WaveDemo:
     def __init__(self):
         self.state = "neutral"
         self.person_detected = False
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(2)
         rospy.wait_for_service('wave_service')
         self.waver = rospy.ServiceProxy('wave_service', Trigger)
         self.homer = rospy.ServiceProxy('home_service', Trigger)
