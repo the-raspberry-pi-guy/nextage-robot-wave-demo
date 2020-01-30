@@ -26,6 +26,7 @@ class NextageWave:
         self.limits = self.ompl.get_problem().get_bounds()
         self.names = self.ompl.get_problem().get_scene().get_joint_names()
 
+        # MATLIB DEBUGGING PLOTS
         # for i in range(self.pos.shape[1]):
         #     plt.figure(i)
         #     # plt.plot(self.pos[:,i], '.-')
