@@ -15,7 +15,7 @@ import signal
 class NextageWave:
 
     def __init__(self):
-        self.trajectory_time = 20.0
+        self.trajectory_time = 60.0
         self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
         self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
         self.ik_solve()
@@ -24,15 +24,16 @@ class NextageWave:
         self.dt = self.trajectory_time / self.pos.shape[0]
         self.vel = (np.diff(np.vstack([self.pos[0], self.pos]), axis=0) + np.diff(np.vstack([self.pos, self.pos[-1]]), axis=0)) / (2.0 * self.dt)
         self.limits = self.ompl.get_problem().get_bounds()
-        self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+        self.names = self.ompl.get_problem().get_scene().get_joint_names()
 
         # for i in range(self.pos.shape[1]):
-        #     plt.figure()
-        #     plt.plot(self.pos[:,i], '.-')
-        #     plt.plot([0,self.pos.shape[0]], [self.limits[i], self.limits[i]], 'r')
-        #     plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
+        #     plt.figure(i)
+        #     # plt.plot(self.pos[:,i], '.-')
+        #     # plt.plot([0,self.pos.shape[0]], [self.limits[i], self.limits[i]], 'r')
+        #     # plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
+        #     plt.plot(self.vel[:,i], '.-')
         #     plt.title(self.names[i])
-        #     plt.show()
+        # plt.show()
         self.trajectory_message = JointTrajectory()
         self.trajectory_message.joint_names = [x.encode('ascii') for x in self.ompl.get_problem().get_scene().get_joint_names()]
         t0 = 1.0
@@ -53,7 +54,7 @@ class NextageWave:
 
         self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
         self.service = rospy.Service("home_service", Trigger, self.trigger_home)
-        self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory, queue_size=10)
+        self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory, queue_size=1)
         self.boolTrigger = False
 
     def spin(self):

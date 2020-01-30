@@ -4,6 +4,7 @@ from __future__ import print_function
 import roslib
 import numpy
 import sys
+from time import time
 import rospy
 import rospkg
 import cv2
@@ -18,7 +19,7 @@ class ImageConverter:
         haar_file = rospy.get_param('~HaarFile', '')
         self.face_cascade = cv2.CascadeClassifier(haar_file)
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber(rospy.resolve_name("~input"),Image,self.callback)
+        self.image_sub = rospy.Subscriber(rospy.resolve_name("~input"),Image,self.callback, queue_size=1)
         self.pub = rospy.Publisher(rospy.resolve_name("~output"), Point)
 
     def callback(self,data):
@@ -38,12 +39,12 @@ class ImageConverter:
         except CvBridgeError as e:
             print(e)
 
-        cv2.imshow("Image window", cv_image)
-        cv2.waitKey(3)
+        # cv2.imshow("Image window", cv_image)
+        # cv2.waitKey(3)
 
 def main(args):
     rospy.init_node('image_converter', anonymous=True)
-    ic = ImageConverter()    
+    ic = ImageConverter()
     try:
         rospy.spin()
     except KeyboardInterrupt:
