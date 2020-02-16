@@ -14,10 +14,10 @@
         <SRDF>{nextagea_moveit_config}/config/NextageAOpen.srdf</SRDF>
         <SetRobotDescriptionRosParams>1</SetRobotDescriptionRosParams>
         <Links>
-            <Link Name="Target1" Parent="" Transform="0.37 -0.23 0.021  0.0 0 0"/> 
+            <Link Name="Target1" Parent="" Transform="0 0 0 0 0 0"/> 
             <Link Name="Target2" Parent="" Transform="0.35 -0.23 0.7 0 3.0 0.0"/> 
             <Link Name="Target3" Parent="" Transform="0.35 -0.23 0.7 0 -3.0 0.5"/> 
-            <!-- INIT POSE Transform="0.37 -0.23 0.021 0 0 0" -->
+            <!-- INIT POSE Transform="0 0 0 0 0 0" -->
             <!-- WAVE POSE 1 Transform="0.25 -0.23 0.7 3.1415 0 1.5708" -->
             <!-- WAVE POSE 2 Transform="0.25 -0.23 0.7 3.1415 0 -1.5708" -->
         </Links>
@@ -25,6 +25,7 @@
     </PlanningScene>
     
     <Maps>
+      <JointLimit Name="JL"/>
       <EffFrame Name="Position1">
         <EndEffector>
             <Frame Link="RARM_JOINT5_Link" Base="Target1"/>
@@ -42,16 +43,14 @@
       </EffFrame>
     </Maps>
 
-    <JointLimit Name="JL"/>
-    <Task Task="JL" Rho="1e3"/>
-
     <Cost>
       <Task Task="Position1" Rho="0"/>
       <Task Task="Position2" Rho="1e3"/>
       <Task Task="Position3" Rho="0"/>
+      <Task Task="JL" Rho="1e3"/>
     </Cost>
 
-    <StartState>0 0 0 0 0 0 0 0 -1.0 0 -1.0 0</StartState>
+    <StartState>0 0 0 0 0 0 0 0 0 0 0 0</StartState>
     <W>6 5 4 3 2 1 6 5 4 3 2 1</W>
   </UnconstrainedEndPoseProblem>
 
