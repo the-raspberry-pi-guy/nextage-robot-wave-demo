@@ -20,9 +20,9 @@ class NextageWave:
         self.trajectory_time = 60.0
         
         self.initpos = np.zeros(12)
-        self.wave1 = np.array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, -9.68594576e-17, -8.44260033e-01, -3.74426105e-01, -1.91035430e-16, -2.06449917e+00, -3.38671364e-16])
-        self.wave2 = np.array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, -3.06160690e-02, -7.90053442e-01, -5.04343830e-01, -4.44188427e+01, -1.74051706e+00, -4.49395602e+01])
-        self.pos = [self.initpos, self.wave1, self.wave2]
+        self.wave1 = np.array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.81471187e-18, -8.44162526e-01, -3.74435514e-01, -5.40411544e-19, -2.06449916e+00,  1.32041479e-18])
+        self.wave2 = np.array([0, 0, 0, 0, 0, 0, -0.03067915, -0.7899913, -0.504348, 2.7050467, -1.4010756, 2.18432966])
+        self.pos = [self.initpos, self.wave1, self.wave2, self.wave1, self.initpos]
 
         self.limits = self.ompl.get_problem().get_bounds()
         self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
@@ -35,7 +35,7 @@ class NextageWave:
             point = JointTrajectoryPoint()
             point.velocities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             point.positions = self.pos[i].tolist()
-            point.time_from_start = rospy.Duration(t0 + float(i) * 5)
+            point.time_from_start = rospy.Duration(t0 + float(i) * 10)
             self.trajectory_message.points.append(point)
 
         self.home_message = JointTrajectory()

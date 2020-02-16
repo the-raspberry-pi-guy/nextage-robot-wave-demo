@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <IKSolverDemoConfig>
 
-  <LevenbergMarquardtSolver Name="MySolver">
+  <IKSolver Name="MySolver">
     <MaxIterations>1000</MaxIterations>
-  </LevenbergMarquardtSolver>
+  </IKSolver>
 
   <UnconstrainedEndPoseProblem Name="MyProblem">
 
@@ -41,6 +41,9 @@
         </EndEffector>
       </EffFrame>
     </Maps>
+
+    <JointLimit Name="JL"/>
+    <Task Task="JL" Rho="1e3"/>
 
     <Cost>
       <Task Task="Position1" Rho="0"/>
