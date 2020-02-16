@@ -24,6 +24,7 @@ class WaveDemo:
     def spin(self):
         while not rospy.is_shutdown():
             # 3 state FSM representing different robot operations
+            
             if self.state == "neutral":
                 print("In neutral")
                 if self.person_detected:

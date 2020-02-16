@@ -15,41 +15,33 @@ import signal
 class NextageWave:
 
     def __init__(self):
-        self.trajectory_time = 60.0
-        self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
-        self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
-        self.ik_solve()
-        publish_pose(self.q1, self.ik.get_problem())
-        self.pos = self.solve_ompl()
-        self.dt = self.trajectory_time / self.pos.shape[0]
-        self.vel = (np.diff(np.vstack([self.pos[0], self.pos]), axis=0) + np.diff(np.vstack([self.pos, self.pos[-1]]), axis=0)) / (2.0 * self.dt)
-        self.limits = self.ompl.get_problem().get_bounds()
-        self.names = self.ompl.get_problem().get_scene().get_joint_names()
 
-        # MATLIB DEBUGGING PLOTS
-        # for i in range(self.pos.shape[1]):
-        #     plt.figure(i)
-        #     # plt.plot(self.pos[:,i], '.-')
-        #     # plt.plot([0,self.pos.shape[0]], [self.limits[i], self.limits[i]], 'r')
-        #     # plt.plot([0,self.pos.shape[0]], [self.limits[i+12], self.limits[i+12]], 'r')
-        #     plt.plot(self.vel[:,i], '.-')
-        #     plt.title(self.names[i])
-        # plt.show()
+        self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
+        self.trajectory_time = 60.0
+        
+        self.initpos = np.zeros(12)
+        self.wave1 = np.array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, -9.68594576e-17, -8.44260033e-01, -3.74426105e-01, -1.91035430e-16, -2.06449917e+00, -3.38671364e-16])
+        self.wave2 = np.array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, -3.06160690e-02, -7.90053442e-01, -5.04343830e-01, -4.44188427e+01, -1.74051706e+00, -4.49395602e+01])
+        self.pos = [self.initpos, self.wave1, self.wave2]
+
+        self.limits = self.ompl.get_problem().get_bounds()
+        self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
+
         self.trajectory_message = JointTrajectory()
-        self.trajectory_message.joint_names = [x.encode('ascii') for x in self.ompl.get_problem().get_scene().get_joint_names()]
+        self.trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
         t0 = 1.0
 
-        for i in range(self.pos.shape[0]):
+        for i in range(0, len(self.pos)):
             point = JointTrajectoryPoint()
-            point.velocities = self.vel[i].tolist()
+            point.velocities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             point.positions = self.pos[i].tolist()
-            point.time_from_start = rospy.Duration(t0 + float(i) * self.dt)
+            point.time_from_start = rospy.Duration(t0 + float(i) * 5)
             self.trajectory_message.points.append(point)
 
         self.home_message = JointTrajectory()
         self.home_message.joint_names = self.trajectory_message.joint_names
         point = JointTrajectoryPoint()
-        point.positions = self.pos[0].tolist()
+        point.positions = self.initpos 
         point.time_from_start = rospy.Duration(5.0)
         self.home_message.points.append(point)
 
@@ -71,33 +63,6 @@ class NextageWave:
             except KeyboardInterrupt:
                 break
 
-    def ik_solve(self):
-        self.q1 = np.zeros(12)
-        self.q2 = self.ik.solve()[0]
-        self.q3 = self.q2.copy()
-        self.q3[-1] -= 0.5
-
-        
-    def solve_ompl(self):
-        solution = []
-        self.ompl.get_problem().start_state = self.q1
-        self.ompl.get_problem().goal_state = self.q2
-        print('Solving 1')
-        solution += self.ompl.solve().tolist()
-        self.ompl.get_problem().start_state = self.q2
-        self.ompl.get_problem().goal_state = self.q3
-        print('Solving 2')
-        solution += self.ompl.solve().tolist()
-        self.ompl.get_problem().start_state = self.q3
-        self.ompl.get_problem().goal_state = self.q2
-        print('Solving 3')
-        solution += self.ompl.solve().tolist()
-        self.ompl.get_problem().start_state = self.q2
-        self.ompl.get_problem().goal_state = self.q1
-        print('Solving 4')
-        solution += self.ompl.solve().tolist()
-        solution = np.array(solution)
-        return solution
 
     def trigger_home(self, request):
         self.home_message.header.stamp = rospy.Time.now()
