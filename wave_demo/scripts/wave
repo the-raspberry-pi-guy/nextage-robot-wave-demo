@@ -17,11 +17,10 @@ class NextageWave:
     def __init__(self):
 
         self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
-        self.trajectory_time = 60.0
         
         self.initpos = np.zeros(12)
-        self.wave1 = np.array([0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.81471187e-18, -8.44162526e-01, -3.74435514e-01, -5.40411544e-19, -2.06449916e+00,  1.32041479e-18])
-        self.wave2 = np.array([0, 0, 0, 0, 0, 0, -0.03067915, -0.7899913, -0.504348, 2.7050467, -1.4010756, 2.18432966])
+        self.wave1 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
+        self.wave2 = np.array([0, 0, 0, 0, 0, 0,-0.02707873, -0.78074417, -0.5039069,  -0.39894727, -1.74913549, -0.91619978])
         self.pos = [self.initpos, self.wave1, self.wave2, self.wave1, self.initpos]
 
         self.limits = self.ompl.get_problem().get_bounds()
