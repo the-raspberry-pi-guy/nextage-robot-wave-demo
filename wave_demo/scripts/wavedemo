@@ -22,32 +22,30 @@ class WaveDemo:
         result = self.homer(self.wave_service_trigger)
         self.watching_timer = rospy.Time.now()
 
-
     def spin(self):
         while not rospy.is_shutdown():
             # 3 state FSM representing different robot operations
             
             if self.state == "neutral":
-                print("In neutral")
+                print("[wavedemo] In neutral")
                 if self.person_detected:
                     self.state = "watching"
                     self.watching_timer = rospy.Time.now()
 
             elif self.state == "watching":
-                print("Watching person")
+                print("[wavedemo] Watching person")
                 #if not self.person_detected:
-                #    print("Person was detected but now is not")
+                #    print("[wavedemo] Person was detected but now is not")
                 #    self.state = "neutral"
 
                 if (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=5):
-                    print("Trigger")
                     self.wave()
                     self.state = "cooldown"
                 else:
                     pass
             
             elif self.state == "cooldown":
-                print("In cooldown")
+                print("[wavedemo] In cooldown after wave")
                 if not self.person_detected:
                     self.state = "neutral"
 
@@ -58,7 +56,7 @@ class WaveDemo:
         self.person_detected = True
 
     def wave(self):
-        print("\n\n\nTrigger wave_service from wavedemo")
+        print("[wavedemo] Calling wave service")
         result = self.waver(self.wave_service_trigger)
 
 

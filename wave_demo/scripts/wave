@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-
-import pyexotica as exo
-from pyexotica.publish_trajectory import *
 from time import sleep
 import sys
 import numpy as np
@@ -16,27 +13,26 @@ class NextageWave:
 
     def __init__(self):
 
-        self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
-        
+        self.names = [u'LARM_JOINT0', u'LARM_JOINT1', u'LARM_JOINT2', u'LARM_JOINT3', u'LARM_JOINT4', u'LARM_JOINT5', u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
+
+        # Wave trajectory message
         self.initpos = np.zeros(12)
         self.wave1 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
         self.wave2 = np.array([0, 0, 0, 0, 0, 0,-0.02707873, -0.78074417, -0.5039069,  -0.39894727, -1.74913549, -0.91619978])
-        self.pos = [self.initpos, self.wave1, self.wave2, self.wave1, self.initpos]
-
-        self.limits = self.ompl.get_problem().get_bounds()
-        self.names = self.ompl.get_problem().get_scene().get_controlled_joint_names()
-
+        self.wavepos = [self.initpos, self.wave1, self.wave2, self.wave1, self.initpos]
+        self.timing = [0.0, 3.0, 3.5, 4.0, 6.0]
+        self.trajectory_time = self.timing[len(self.timing)-1]
+        
         self.trajectory_message = JointTrajectory()
         self.trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
-        t0 = 1.0
-
-        for i in range(0, len(self.pos)):
+        for i in range(0, len(self.wavepos)):
             point = JointTrajectoryPoint()
             point.velocities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            point.positions = self.pos[i].tolist()
-            point.time_from_start = rospy.Duration(t0 + float(i) * 10)
+            point.positions = self.wavepos[i].tolist()
+            point.time_from_start = rospy.Duration(self.timing[i])
             self.trajectory_message.points.append(point)
 
+        # Home trajectory message
         self.home_message = JointTrajectory()
         self.home_message.joint_names = self.trajectory_message.joint_names
         point = JointTrajectoryPoint()
@@ -44,6 +40,7 @@ class NextageWave:
         point.time_from_start = rospy.Duration(5.0)
         self.home_message.points.append(point)
 
+        # Wave/Home trajectory service setups
         self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
         self.service = rospy.Service("home_service", Trigger, self.trigger_home)
         self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory, queue_size=1)
@@ -53,10 +50,9 @@ class NextageWave:
         while not rospy.is_shutdown():
             try:
                 if self.boolTrigger == True:
-                    print("SHOULD WAVE")
+                    print("[wave] Triggering wave")
                     self.trajectory_message.header.stamp = rospy.Time.now()
                     self.pub.publish(self.trajectory_message)
-                    #publish_trajectory(self.pos, self.trajectory_time, self.ompl.get_problem(), True)
                     self.boolTrigger = False
                 sleep(0.1)
             except KeyboardInterrupt:
@@ -64,9 +60,9 @@ class NextageWave:
 
 
     def trigger_home(self, request):
+        print("[wave] Triggering homing - robot going to init pos")
         self.home_message.header.stamp = rospy.Time.now()
         self.pub.publish(self.home_message)
-
         sleep(5.0)
         return TriggerResponse(success=True, message="Done")
 
@@ -80,11 +76,9 @@ def sig_int_handler(signal, frame):
 
 def main(args):
     rospy.init_node("wave_service")
-    exo.Setup.init_ros()
     signal.signal(signal.SIGINT, sig_int_handler)
     wave = NextageWave()
     wave.spin()
-
 
 if __name__ == '__main__':
     main(sys.argv)
