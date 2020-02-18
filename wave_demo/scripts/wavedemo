@@ -11,7 +11,7 @@ from std_srvs.srv import Trigger, TriggerResponse, TriggerRequest
 class WaveDemo:
 
     def __init__(self):
-        self.state = "watching"
+        self.state = "neutral"
         self.person_detected = False
         self.rate = rospy.Rate(2)
         rospy.wait_for_service('wave_service')
@@ -34,11 +34,11 @@ class WaveDemo:
 
             elif self.state == "watching":
                 print("[wavedemo] Watching person")
-                #if not self.person_detected:
-                #    print("[wavedemo] Person was detected but now is not")
-                #    self.state = "neutral"
+                if not self.person_detected:
+                    print("[wavedemo] Person was detected but now is not")
+                    self.state = "neutral"
 
-                if (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=5):
+                if (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=3):
                     self.wave()
                     self.state = "cooldown"
                 else:
