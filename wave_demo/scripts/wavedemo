@@ -1,7 +1,8 @@
 #!/usr/bin/env python
+# FSM and control path for wavedemo
+
 from __future__ import print_function
 
-import pyexotica as exo
 from time import sleep
 import sys
 import rospy
@@ -11,6 +12,7 @@ from std_srvs.srv import Trigger, TriggerResponse, TriggerRequest
 class WaveDemo:
 
     def __init__(self):
+        # Initial setup of services and FSM default state
         self.state = "neutral"
         self.person_detected = False
         self.rate = rospy.Rate(2)
@@ -20,42 +22,53 @@ class WaveDemo:
         self.wave_service_trigger = TriggerRequest()
         rospy.Subscriber(rospy.resolve_name("~input"), Point, self.callback)
         result = self.homer(self.wave_service_trigger)
-        self.watching_timer = rospy.Time.now()
 
     def spin(self):
         while not rospy.is_shutdown():
             # 3 state FSM representing different robot operations
             
+            # Robot not detecting any people
             if self.state == "neutral":
                 print("[wavedemo] In neutral")
                 if self.person_detected:
                     self.state = "watching"
                     self.watching_timer = rospy.Time.now()
 
+            # Robot detects person
             elif self.state == "watching":
                 print("[wavedemo] Watching person")
+                # If person stops looking at the robot
                 if not self.person_detected:
                     print("[wavedemo] Person was detected but now is not")
                     self.state = "neutral"
 
+                # If person has been staring at robot for over 3 seconds, trigger wave
                 if (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=3):
                     self.wave()
                     self.state = "cooldown"
                 else:
                     pass
             
+            # Robot waiting for person to leave/look away before being able to wave again
             elif self.state == "cooldown":
                 print("[wavedemo] In cooldown after wave")
-                if not self.person_detected:
+                # If isn't currently detected and hasn't been detected for more than x amount of time, go to neutral
+                if (not self.person_detected) and (rospy.Time.now() - self.last_time_seen) > rospy.Duration(secs=0.5):
                     self.state = "neutral"
+
+            else:
+                raise Exception("Undefined FSM state")
 
             self.person_detected = False
             self.rate.sleep()
 
     def callback(self,data):
+        # Record time the person was seen and set detection flag to true
+        self.last_time_seen = rospy.Time.now()
         self.person_detected = True
 
     def wave(self):
+        # Calls wave service
         print("[wavedemo] Calling wave service")
         result = self.waver(self.wave_service_trigger)
 

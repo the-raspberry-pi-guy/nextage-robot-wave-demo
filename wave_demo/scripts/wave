@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Wave motion service for wavedemo
+
 from time import sleep
 import sys
 import numpy as np
@@ -15,7 +17,7 @@ class NextageWave:
 
         self.names = [u'LARM_JOINT0', u'LARM_JOINT1', u'LARM_JOINT2', u'LARM_JOINT3', u'LARM_JOINT4', u'LARM_JOINT5', u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
 
-        # Wave trajectory message
+        # Wave trajectory message, poses and timing information
         self.initpos = np.zeros(12)
         self.wave1 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
         self.wave2 = np.array([0, 0, 0, 0, 0, 0,-0.02707873, -0.78074417, -0.5039069,  -0.39894727, -1.74913549, -0.91619978])
@@ -49,6 +51,7 @@ class NextageWave:
     def spin(self):
         while not rospy.is_shutdown():
             try:
+                # If wave service initalised, trigger wave
                 if self.boolTrigger == True:
                     print("[wave] Triggering wave")
                     self.trajectory_message.header.stamp = rospy.Time.now()
