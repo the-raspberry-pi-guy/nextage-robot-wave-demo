@@ -29,7 +29,7 @@ class NextageWave:
         self.trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
         for i in range(0, len(self.wavepos)):
             point = JointTrajectoryPoint()
-            point.velocities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            point.velocities = [0]*12
             point.positions = self.wavepos[i].tolist()
             point.time_from_start = rospy.Duration(self.timing[i])
             self.trajectory_message.points.append(point)

@@ -16,9 +16,6 @@
         <Links>
             <Link Name="wave1" Parent="" Transform="0.35 -0.23 0.7 0 3.0 0.0"/> 
             <Link Name="wave2" Parent="" Transform="0.35 -0.23 0.7 0 -3.0 0.5"/> 
-            <!-- INIT POSE Transform="0 0 0 0 0 0" -->
-            <!-- WAVE POSE 1 Transform="0.25 -0.23 0.7 3.1415 0 1.5708" -->
-            <!-- WAVE POSE 2 Transform="0.25 -0.23 0.7 3.1415 0 -1.5708" -->
         </Links>
       </Scene>
     </PlanningScene>

@@ -1,19 +1,14 @@
 #!/usr/bin/env python
+# EXOTIca IK calculator for poses for wavedemo
 
 import pyexotica as exo
 from pyexotica.publish_trajectory import *
-from time import sleep
 import sys
 import numpy as np
-import rospy
-from geometry_msgs.msg import Point
-from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
-from std_srvs.srv import Trigger, TriggerResponse
 
 class ik_outputter:
 
     def __init__(self):
-        self.trajectory_time = 20.0
         self.ik = exo.Setup.load_solver('{wave_demo}/resources/nextage_ik.xml')
         self.ompl = exo.Setup.load_solver('{wave_demo}/resources/nextage_ompl.xml')
         self.solved = self.ik_solve()
@@ -31,7 +26,6 @@ class ik_outputter:
         print self.wave2
 
 def main(args):
-    rospy.init_node("wave_service")
     exo.Setup.init_ros()
     print("Solving the IK: ")
     wave = ik_outputter()
