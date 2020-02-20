@@ -20,16 +20,16 @@ class NextageWave:
         # Wave trajectory message, poses and timing information
         self.initpos = np.zeros(12)
         self.wave1 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
-        self.wave2 = np.array([0, 0, 0, 0, 0, 0,-0.02707873, -0.78074417, -0.5039069,  -0.39894727, -1.74913549, -0.91619978])
-        self.wavepos = [self.initpos, self.wave1, self.wave2, self.wave1, self.initpos]
-        self.timing = [0.0, 3.0, 3.5, 4.0, 6.0]
+        self.wave2 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, -1.0])
+        self.wavepos = [self.wave1, self.wave2, self.wave1, self.wave2, self.wave1, self.initpos]
+        self.timing = [3.0, 3.5, 4.0, 4.5, 5.0, 8.0]
         self.trajectory_time = self.timing[len(self.timing)-1]
         
         self.trajectory_message = JointTrajectory()
         self.trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
         for i in range(0, len(self.wavepos)):
             point = JointTrajectoryPoint()
-            point.velocities = [0]*12
+            point.velocities = np.zeros(12).tolist()
             point.positions = self.wavepos[i].tolist()
             point.time_from_start = rospy.Duration(self.timing[i])
             self.trajectory_message.points.append(point)
