@@ -22,7 +22,7 @@ class NextageWave:
         self.wave1 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
         self.wave2 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, -1.0])
         self.wavepos = [self.wave1, self.wave2, self.wave1, self.wave2, self.wave1, self.initpos]
-        self.timing = [3.0, 3.5, 4.0, 4.5, 5.0, 8.0]
+        self.timing = [2.0, 2.5, 3.0, 3.5, 4.0, 6.0]
         self.trajectory_time = self.timing[len(self.timing)-1]
         
         self.trajectory_message = JointTrajectory()
