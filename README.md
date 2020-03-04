@@ -5,12 +5,25 @@ This project makes use of [ROS](https://www.ros.org) for communication between n
 
 ## Video
 [![Nextage Wave Demo](http://img.youtube.com/vi/-q6xLpI4pFU/0.jpg)](https://www.youtube.com/watch?v=-q6xLpI4pFU&feature=youtu.be "Nextage Video")
+Better video coming soon.
 
 ## Installation Instructions
-To run this demo:
+This demo has been tested in both simulation and on the real Nextage robotic platform. In simulation, the demo.launch script operates on the host PC assuming an Intel RealSense camera has been plugged in via USB. The waving motion can then be observed in the Kawada simulator. On the hardware, the robot.launch script operates on the Intel NUC inside the Nextage and uses one of the uEye webcams in the head of the robot. Waving motion is then triggered with the *right* arm - ensure enough clearance.
 
-## Technical Details
-* Use robot.launch when running on the real hardware - use demo.launch when running in simulation using the Intel RealSense camera
+### ROS Prerequisites
+In order to run this - you need ROS version xyz. {Insert ROS guidance here}
+
+### Setting up the Kawada Docker
+To install this - follow IPAB Wiki guide {Here}
+
+### Setting up Intel RealSense
+To install this - follow IPAB Wiki guide {Here}
+
+### Running in Simulation
+This is how to run the wave demo in simulation.
+
+### Running on the Nextage Platform
+This is the process for running on the actual Nextage platform.
 
 ## Observations
 * Demo uses ~60% of CPU of the small Intel NUC powering the Nextage
