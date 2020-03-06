@@ -5,6 +5,7 @@ This project makes use of [ROS](https://www.ros.org) for communication between n
 
 ## Video
 [![Nextage Wave Demo](http://img.youtube.com/vi/-q6xLpI4pFU/0.jpg)](https://www.youtube.com/watch?v=-q6xLpI4pFU&feature=youtu.be "Nextage Video")
+
 Better video coming soon.
 
 ## Installation Instructions
@@ -14,12 +15,18 @@ This demo has been tested in both simulation and on the real Nextage robotic pla
 In order to install ROS, follow the official installation guide here: http://wiki.ros.org/Installation/Ubuntu
 
 ### Setting up the Kawada Docker
-The Kawada simulator is packaged inside of this Docker: https://github.com/ipab-slmc/kawada-docker
+First, you must install Docker. To do this, follow the "Install using the repository" official guide here: https://docs.docker.com/install/linux/docker-ce/ubuntu/ Check with ```docker --version``` that the version you have installed is the latest. Older versions of Docker known to have issues. Tested with Docker version 19.03.
 
-First, you must install Docker. To do this, follow the "Install using the repository" official guide here: https://docs.docker.com/install/linux/docker-ce/ubuntu/ Check with ```docker --version``` that the version you have installed is the latest. Older versions of Docker have are known to incompatible. Tested with Docker version 19.03.
+With Docker installed, now clone the Kawada docker. The Kawada simulator is packaged here: https://github.com/ipab-slmc/kawada-docker
+```git clone https://github.com/ipab-slmc/kawada-docker```
+
+To run the Kawada docker, change to the kawada-docker directory and use the command:
+```./run-nvidia.sh```
 
 ### Setting up Intel RealSense
-To install this - follow IPAB Wiki guide {Here}
+To install the Intel RealSense software, follow the IPAB Wiki guide here: https://github.com/ipab-slmc/wiki/wiki/Intel-RealSense2
+
+### Setup a Catkin Workspace
 
 ### Running in Simulation
 This is how to run the wave demo in simulation.
