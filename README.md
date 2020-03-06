@@ -8,13 +8,15 @@ This project makes use of [ROS](https://www.ros.org) for communication between n
 Better video coming soon.
 
 ## Installation Instructions
-This demo has been tested in both simulation and on the real Nextage robotic platform. In simulation, the demo.launch script operates on the host PC assuming an Intel RealSense camera has been plugged in via USB. The waving motion can then be observed in the Kawada simulator. On the hardware, the robot.launch script operates on the Intel NUC inside the Nextage and uses one of the uEye webcams in the head of the robot. Waving motion is then triggered with the *right* arm - ensure enough clearance.
+This demo has been tested in both simulation and on the real Nextage robotic platform. In simulation, the demo.launch script operates on the host PC assuming an Intel RealSense camera has been plugged in via USB. The waving motion can then be observed in the Kawada simulator. On the hardware, the robot.launch script operates on the Intel NUC inside the Nextage and uses one of the uEye webcams in the head of the robot. Waving motion is then triggered with the *right* arm.
 
 ### ROS Prerequisites
-In order to run this - you need ROS version xyz. {Insert ROS guidance here}
+In order to install ROS, follow the official installation guide here: http://wiki.ros.org/Installation/Ubuntu
 
 ### Setting up the Kawada Docker
-To install this - follow IPAB Wiki guide {Here}
+The Kawada simulator is packaged inside of this Docker: https://github.com/ipab-slmc/kawada-docker
+
+First, you must install Docker. To do this, follow the "Install using the repository" official guide here: https://docs.docker.com/install/linux/docker-ce/ubuntu/ Check with ```docker --version``` that the version you have installed is the latest. Older versions of Docker have are known to incompatible. Tested with Docker version 19.03.
 
 ### Setting up Intel RealSense
 To install this - follow IPAB Wiki guide {Here}
