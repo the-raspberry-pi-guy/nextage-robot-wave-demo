@@ -44,7 +44,7 @@ To run the wave demo in simulation, ensure that the Intel Realsense is plugged i
 
 ```./startsim.sh```
 
-![https://raw.githubusercontent.com/the-raspberry-pi-guy/nextage-robot-wave-demo/master/img/sim.png]
+![](https://raw.githubusercontent.com/the-raspberry-pi-guy/nextage-robot-wave-demo/master/img/sim.png)
 
 After this, ensure that your workspace is properly sourced (see guide above) and run the demo with the command:
 
