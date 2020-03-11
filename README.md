@@ -44,14 +44,14 @@ To run the wave demo in simulation, ensure that the Intel Realsense is plugged i
 
 ```./startsim.sh```
 
-![](https://raw.githubusercontent.com/the-raspberry-pi-guy/nextage-robot-wave-demo/master/img/sim.png)
+![Kawada simulator](https://raw.githubusercontent.com/the-raspberry-pi-guy/nextage-robot-wave-demo/master/img/sim.png)
 
 After this, ensure that your workspace is properly sourced (see guide above) and run the demo with the command:
 
 ```roslaunch wave_demo demo.launch```
 
 ### Running on the Nextage Platform
-To run on the physical Nextage platform, setup the demo in a workspace on the internal Intel NUC inside one of the Nextages. Follow the Wiki here with how to operate the Nextage:
+To run on the physical Nextage platform, setup the demo in a workspace on the internal Intel NUC inside one of the Nextages. Follow the Wiki here with how to operate the Nextage: https://github.com/ipab-slmc/wiki/wiki/Nextage
 
 Ensure there is enough space around the robot and run the demo with the command:
 
@@ -63,5 +63,5 @@ Step at least 1.5 metres in front of the robot. It will detect your face and aft
 * Demo uses ~60% of CPU of the small Intel NUC powering the Nextage
 * Edit the rospy rate in detect and the other scripts to change the refresh rate of the camera. Also can edit the number of seconds the person needs to look at the Nextage before a wave is triggered.
 
-### About
+## About
 This demo was created by Matt Timmons-Brown (with the help of Vladimir Ivan and the Robotics Lab at the University of Edinburgh) as part of an internship at the [Edinburgh Centre for Robotics, School of Informatics, The University of Edinburgh](https://www.edinburgh-robotics.org).
