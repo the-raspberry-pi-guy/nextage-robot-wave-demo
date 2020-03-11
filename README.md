@@ -8,7 +8,7 @@ This project makes use of [ROS](https://www.ros.org) for communication between n
 
 Better video coming soon.
 
-## Installation Instructions
+## Installation & Running Instructions
 This demo has been tested in both simulation and on the real Nextage robotic platform. In simulation, the demo.launch script operates on the host PC assuming an Intel RealSense camera has been plugged in via USB. The waving motion can then be observed in the Kawada simulator. On the hardware, the robot.launch script operates on the Intel NUC inside the Nextage and uses one of the uEye webcams in the head of the robot. Waving motion is then triggered with the *right* arm.
 
 ### ROS Prerequisites
@@ -51,11 +51,17 @@ After this, ensure that your workspace is properly sourced (see guide above) and
 ```roslaunch wave_demo demo.launch```
 
 ### Running on the Nextage Platform
-This is the process for running on the actual Nextage platform.
+To run on the physical Nextage platform, setup the demo in a workspace on the internal Intel NUC inside one of the Nextages. Follow the Wiki here with how to operate the Nextage:
 
-## Observations & Notes
+Ensure there is enough space around the robot and run the demo with the command:
+
+```roslaunch wave_demo robot.launch```
+
+Step at least 1.5 metres in front of the robot. It will detect your face and after the time limit, a wave will be triggered with the right arm.
+
+## Notes
 * Demo uses ~60% of CPU of the small Intel NUC powering the Nextage
 * Edit the rospy rate in detect and the other scripts to change the refresh rate of the camera. Also can edit the number of seconds the person needs to look at the Nextage before a wave is triggered.
 
 ### About
-This demo was created by Matt Timmons-Brown (and with the help of Vladimir Ivan and the Robotics Lab at the University of Edinburgh) as part of an internship at the [Edinburgh Centre for Robotics, School of Informatics, The University of Edinburgh](https://www.edinburgh-robotics.org).
+This demo was created by Matt Timmons-Brown (with the help of Vladimir Ivan and the Robotics Lab at the University of Edinburgh) as part of an internship at the [Edinburgh Centre for Robotics, School of Informatics, The University of Edinburgh](https://www.edinburgh-robotics.org).
