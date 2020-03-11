@@ -26,9 +26,18 @@ To run the Kawada docker, change to the kawada-docker directory and use the comm
 ```./run-nvidia.sh```
 
 ### Setting up Intel RealSense
-To install the Intel RealSense software, follow the IPAB Wiki guide here: https://github.com/ipab-slmc/wiki/wiki/Intel-RealSense2
+To install the Intel RealSense software, follow the IPAB Wiki guide here: https://github.com/ipab-slmc/wiki/wiki/Intel-RealSense2 (ROS integration steps are unnecessary to follow)
 
-### Setup a Catkin Workspace
+### Setup a Catkin Workspace and installing Demo
+Setup a catkin workspace using the following cheat sheet: https://catkin-tools.readthedocs.io/en/latest/cheat_sheet.html
+
+After this, navigate to the src directory and install the demo with the command:
+
+```git clone https://github.com/the-raspberry-pi-guy/nextage-robot-wave-demo```
+
+Build the workspace after this with the command:
+
+```catkin build```
 
 ### Running in Simulation
 This is how to run the wave demo in simulation.
