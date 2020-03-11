@@ -40,13 +40,22 @@ Build the workspace after this with the command:
 ```catkin build```
 
 ### Running in Simulation
-This is how to run the wave demo in simulation.
+To run the wave demo in simulation, ensure that the Intel Realsense is plugged into the host computer. In one window run the Kawada docker (as above), then start the simulator with the command:
+
+```./startsim.sh```
+
+![https://raw.githubusercontent.com/the-raspberry-pi-guy/nextage-robot-wave-demo/master/img/sim.png]
+
+After this, ensure that your workspace is properly sourced (see guide above) and run the demo with the command:
+
+```roslaunch wave_demo demo.launch```
 
 ### Running on the Nextage Platform
 This is the process for running on the actual Nextage platform.
 
-## Observations
+## Observations & Notes
 * Demo uses ~60% of CPU of the small Intel NUC powering the Nextage
+* Edit the rospy rate in detect and the other scripts to change the refresh rate of the camera. Also can edit the number of seconds the person needs to look at the Nextage before a wave is triggered.
 
 ### About
 This demo was created by Matt Timmons-Brown (and with the help of Vladimir Ivan and the Robotics Lab at the University of Edinburgh) as part of an internship at the [Edinburgh Centre for Robotics, School of Informatics, The University of Edinburgh](https://www.edinburgh-robotics.org).
