@@ -6,7 +6,7 @@ This project makes use of [ROS](https://www.ros.org) for communication between n
 ## Video
 [![Nextage Wave Demo](http://img.youtube.com/vi/-q6xLpI4pFU/0.jpg)](https://www.youtube.com/watch?v=-q6xLpI4pFU&feature=youtu.be "Nextage Video")
 
-Better video coming soon. <Full demo video delayed due to Coronavirus>
+Better video coming soon. **Full demo video delayed due to Coronavirus**
 
 ## Installation & Running Instructions
 This demo has been tested in both simulation and on the real Nextage robotic platform. In simulation, the demo.launch script operates on the host PC assuming an Intel RealSense camera has been plugged in via USB. The waving motion can then be observed in the Kawada simulator. On the hardware, the robot.launch script operates on the Intel NUC inside the Nextage and uses one of the uEye webcams in the head of the robot. Waving motion is then triggered with the *right* arm.
