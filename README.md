@@ -17,6 +17,8 @@ In order to install ROS, follow the official installation guide here: http://wik
 ### Setting up the Kawada Docker
 First, you must install Docker. To do this, follow the "Install using the repository" official guide here: https://docs.docker.com/install/linux/docker-ce/ubuntu/ Check with ```docker --version``` that the version you have installed is the latest. Older versions of Docker known to have issues. Tested with Docker version 19.03.
 
+After this, install and setup nvidia-docker using the instructions provided here: https://github.com/NVIDIA/nvidia-docker
+
 With Docker installed, now clone the Kawada docker. The Kawada simulator is packaged here: https://github.com/ipab-slmc/kawada-docker
 
 ```git clone https://github.com/ipab-slmc/kawada-docker```
