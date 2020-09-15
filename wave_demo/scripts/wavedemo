@@ -42,8 +42,8 @@ class WaveDemo:
                     print("[wavedemo] Person was detected but now is not")
                     self.state = "neutral"
 
-                # If person has been staring at robot for over 3 seconds, trigger wave
-                if (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=3):
+                # If person has been staring at robot for over 2 seconds, trigger wave
+                if (rospy.Time.now() - self.watching_timer) >= rospy.Duration(secs=2):
                     self.wave()
                     self.state = "cooldown"
                 else:
