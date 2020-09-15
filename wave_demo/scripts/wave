@@ -15,12 +15,12 @@ class NextageWave:
 
     def __init__(self):
 
-        self.names = [u'LARM_JOINT0', u'LARM_JOINT1', u'LARM_JOINT2', u'LARM_JOINT3', u'LARM_JOINT4', u'LARM_JOINT5', u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
+        self.names = [u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
 
         # Wave trajectory message, poses and timing information
-        self.initpos = np.zeros(12)
-        self.wave1 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
-        self.wave2 = np.array([0, 0, 0, 0, 0, 0, 4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, -1.0])
+        self.initpos = np.zeros(6)
+        self.wave1 = np.array([4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, 3.17927198e-04])
+        self.wave2 = np.array([4.02507408e-04, -8.42815834e-01, -3.76086535e-01, -8.06545915e-05, -2.06423466e+00, -1.0])
         self.wavepos = [self.wave1, self.wave2, self.wave1, self.wave2, self.wave1, self.initpos]
         self.timing = [2.0, 2.5, 3.0, 3.5, 4.0, 6.0]
         self.trajectory_time = self.timing[len(self.timing)-1]
@@ -29,7 +29,7 @@ class NextageWave:
         self.trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
         for i in range(0, len(self.wavepos)):
             point = JointTrajectoryPoint()
-            point.velocities = np.zeros(12).tolist()
+            point.velocities = np.zeros(6).tolist()
             point.positions = self.wavepos[i].tolist()
             point.time_from_start = rospy.Duration(self.timing[i])
             self.trajectory_message.points.append(point)
@@ -45,7 +45,7 @@ class NextageWave:
         # Wave/Home trajectory service setups
         self.service = rospy.Service("wave_service", Trigger, self.trigger_response)
         self.service = rospy.Service("home_service", Trigger, self.trigger_home)
-        self.pub = rospy.Publisher("/fullbody_controller/command", JointTrajectory, queue_size=1)
+        self.pub = rospy.Publisher("/nextagea/rarm_controller/command", JointTrajectory, queue_size=1)
         self.boolTrigger = False
 
     def spin(self):

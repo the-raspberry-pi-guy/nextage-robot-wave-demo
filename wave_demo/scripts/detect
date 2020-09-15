@@ -9,10 +9,11 @@ import sys
 from time import time
 import rospy
 import rospkg
+import numpy as np
 import cv2
 from std_msgs.msg import String
 from geometry_msgs.msg import Point
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 
 class ImageConverter:
@@ -21,37 +22,43 @@ class ImageConverter:
         # Initial setup and sub/pub to nodes
         haar_file = rospy.get_param('~HaarFile', '')
         # Frame processing rate from camera
-        self.rate = rospy.Rate(10)
+        self.rate = rospy.Rate(100)
         self.face_cascade = cv2.CascadeClassifier(haar_file)
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber(rospy.resolve_name("~input"), Image, self.callback, queue_size=1)
+        self.image_sub = rospy.Subscriber(rospy.resolve_name("~input"), CompressedImage, self.callback, queue_size=1)
         self.pub = rospy.Publisher(rospy.resolve_name("~output"), Point, queue_size=1)
         self.frame_to_be_processed = False
         
-    def callback(self,data):
+    def callback(self,ros_data):
         # Boolean toggle indicates frame ready to be processed
         self.frame_to_be_processed = True
-        self.frame = data
+        np_arr = np.fromstring(ros_data.data, np.uint8)
+        image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        self.frame = image_np
 
     def spin(self):
         while not rospy.is_shutdown():
             if self.frame_to_be_processed == True:
                 try:
                     # Process and detect faces in frame
-                    cv_image = self.bridge.imgmsg_to_cv2(self.frame, "bgr8")
-                    rows, cols, _channels = map(int, cv_image.shape)
-                    cv_image = cv2.pyrDown(cv_image, dstsize=(cols // 2, rows // 2))
-                    gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
-                    faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
-                    
-                    # Draw boxes around faces detected, and publish point data to output node
-                    for (x, y, w, h) in faces:
-                        msg = Point(x*4, y*4, 0)
-                        self.pub.publish(msg)
-                        cv2.rectangle(cv_image, (x, y), (x+w, y+h), (255, 0, 0), 2)
-                    
-                    cv2.imshow("Image window", cv_image)
-                    cv2.waitKey(3)
+                    #cv_image = self.bridge.imgmsg_to_cv2(self.frame, "bgr8")
+                    try:
+                        cv_image = self.frame
+                        rows, cols, _channels = map(int, cv_image.shape)
+                        cv_image = cv2.pyrDown(cv_image, dstsize=(cols // 2, rows // 2))
+                        gray = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+                        faces = self.face_cascade.detectMultiScale(gray, 1.1, 4)
+                        
+                        # Draw boxes around faces detected, and publish point data to output node
+                        for (x, y, w, h) in faces:
+                            msg = Point(x*4, y*4, 0)
+                            self.pub.publish(msg)
+                            cv2.rectangle(cv_image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                        
+                        cv2.imshow("Image window", cv_image)
+                        cv2.waitKey(3)                    
+                    except:
+                        pass
 
                 except CvBridgeError as e:
                     print(e)
